@@ -1,6 +1,7 @@
 package stock_data;
 
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -24,13 +25,8 @@ public class StockFetcher {
 
         var response = client.send(request, HttpResponse.BodyHandlers.ofString()).body();
 
-        response.lines().forEach(line -> {
-            try{
-                writer.write(line);
-            }catch (IOException e){
-                System.out.println(e.getMessage());
-            }
-        });
+        response.lines().forEach(line -> writeFile(writer, line));
+
         System.out.printf("Time Taken: %dms", System.currentTimeMillis() - time);
 
 
@@ -38,5 +34,13 @@ public class StockFetcher {
 
 
 
+    }
+
+    private static void writeFile(BufferedWriter writer, String line) {
+        try{
+            writer.write(line);
+        }catch (IOException e){
+            System.out.println(e.getMessage());
+        }
     }
 }
