@@ -10,10 +10,11 @@ import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class StockFetcher {
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
         var time = System.currentTimeMillis();
         var writer = Files.newBufferedWriter(Path.of("response_data.txt"));
 
@@ -23,9 +24,10 @@ public class StockFetcher {
 
         var client = HttpClient.newHttpClient();
 
-        var response = client.send(request, HttpResponse.BodyHandlers.ofString()).body();
-
-        response.lines().forEach(line -> writeFile(writer, line));
+         client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).
+                get()
+                .body()
+                .lines().forEach(line -> writeFile(writer, line));
 
         System.out.printf("Time Taken: %dms", System.currentTimeMillis() - time);
 
